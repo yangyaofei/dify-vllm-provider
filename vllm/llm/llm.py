@@ -47,8 +47,7 @@ class OAIAPICompatVllmLargeLanguageModel(OAIAPICompatLargeLanguageModel):
                 label=I18nObject(en_US="guided_json"),
                 help=I18nObject(en_US="guided_json in vllm, If specified, the output will follow the JSON schema."),
                 type=ParameterType.TEXT,
-                required=False,
-                options=["JSON"]
+                required=False
             ),
             ParameterRule(
                 name="guided_regex",
