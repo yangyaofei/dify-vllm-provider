@@ -7,6 +7,14 @@ The openai compatible provider in Dify can not do this, but like gpt-4o can do s
 
 This provider provide a vllm provider upon Dify's openai compatible provider with `guided_json`, `guided_regex`, `guided_grammar`.
 
+## Dynamic Request guided
+
+The guided param may various in same workflow, but Dify doesn't give a extra param in LLM to pass it.
+
+This comes little hacky, when the prompt has 2nd part and it's assistant, this provider will use the assistant part as guided param.
+If it can be parsed as json.
+
+The structure of param can be found in `GuidedParam` class.
 
 ## Use in Docker
 
