@@ -4,25 +4,22 @@ import logging
 from collections.abc import Generator, Sequence
 from typing import Optional, Union, Dict
 
-from core.model_runtime.callbacks.base_callback import Callback
-from core.model_runtime.entities.common_entities import I18nObject
-from core.model_runtime.entities.llm_entities import LLMResult
-from core.model_runtime.entities.message_entities import (
+from dify_plugin import OAICompatLargeLanguageModel
+from dify_plugin.entities import I18nObject
+from dify_plugin.entities.model import (
+    AIModelEntity,
+    ParameterRule, ParameterType,
+)
+from dify_plugin.entities.model.llm import (
+    LLMResult,
+)
+from dify_plugin.entities.model.message import (
     PromptMessage,
     PromptMessageTool, PromptMessageRole,
 )
-from core.model_runtime.entities.model_entities import (
-    AIModelEntity,
-)
-from core.model_runtime.entities.model_entities import (
-    ParameterRule,
-    ParameterType
-)
-from core.model_runtime.model_providers.openai_api_compatible.llm.llm import OAIAPICompatLargeLanguageModel
 from pydantic import BaseModel, ValidationError
 
 logger = logging.getLogger(__name__)
-
 
 class GuidedType(str, enum.Enum):
     JSON = "guided_json"
@@ -36,11 +33,10 @@ class GuidedParam(BaseModel):
     param: Union[Dict, str]
 
 
-class OAIAPICompatVllmLargeLanguageModel(OAIAPICompatLargeLanguageModel):
+class VllmLargeLanguageModel(OAICompatLargeLanguageModel):
     """
-    Model class for OpenAI Vllm
+    Model class for vllm large language model.
     """
-
     def invoke(
             self,
             model: str,
@@ -51,7 +47,6 @@ class OAIAPICompatVllmLargeLanguageModel(OAIAPICompatLargeLanguageModel):
             stop: Optional[Sequence[str]] = None,
             stream: bool = True,
             user: Optional[str] = None,
-            callbacks: Optional[list[Callback]] = None,
     ) -> Union[LLMResult, Generator]:
         if len(prompt_messages) >= 2 and prompt_messages[1].role == PromptMessageRole.ASSISTANT:
             try:
@@ -64,7 +59,7 @@ class OAIAPICompatVllmLargeLanguageModel(OAIAPICompatLargeLanguageModel):
 
         return super().invoke(
             model, credentials, prompt_messages, model_parameters,
-            tools, stop, stream, user, callbacks
+            tools, stop, stream, user
         )
 
     def get_customizable_model_schema(self, model: str, credentials: dict) -> AIModelEntity:
