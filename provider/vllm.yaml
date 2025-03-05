@@ -1,9 +1,14 @@
 provider: vllm
 label:
-  en_US: OpenAI-API-vllm
+  en_US: Vllm
 description:
-  en_US: Model providers compatible with OpenAI's API standard, such as LM Studio.
-  zh_Hans: 兼容 OpenAI API 的 vllm
+  en_US: Models provided by vllm with guided inference supported.
+  zh_Hans: Vllm openai guided 支持
+icon_small:
+  en_US: vllm-logo.png
+icon_large:
+  en_US: vllm-logo.png
+background: "#E5E7EB"
 supported_model_types:
   - llm
 configurate_methods:
@@ -14,10 +19,10 @@ model_credential_schema:
       en_US: Model Name
       zh_Hans: 模型名称
     placeholder:
-      en_US: Enter full model name
-      zh_Hans: 输入模型全称
+      en_US: Enter your model name
+      zh_Hans: 输入模型名称
   credential_form_schemas:
-    - variable: api_key
+    - variable: openai_api_key
       label:
         en_US: API Key
       type: secret-input
@@ -145,3 +150,8 @@ model_credential_schema:
           value: llm
       default: '\n\n'
       type: text-input
+extra:
+  python:
+    provider_source: provider/vllm.py
+    model_sources:
+      - "models/llm/llm.py"

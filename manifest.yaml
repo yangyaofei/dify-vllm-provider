@@ -1,0 +1,40 @@
+version: 0.1
+type: plugin
+author: yangyaofei https://github.com/yangyaofei
+name: vllm
+label:
+  en_US: vllm
+  ja_JP: vllm
+  zh_Hans: vllm
+  pt_BR: vllm
+description:
+  en_US: vllm provider for guided support https://docs.vllm.ai/en/latest/serving/openai_compatible_server.html#id5
+  ja_JP: vllm provider for guided support https://docs.vllm.ai/en/latest/serving/openai_compatible_server.html#id5
+  zh_Hans: vllm provider for guided support https://docs.vllm.ai/en/latest/serving/openai_compatible_server.html#id5
+  pt_BR: vllm provider for guided support https://docs.vllm.ai/en/latest/serving/openai_compatible_server.html#id5
+icon: vllm-logo.png
+resource:
+  memory: 268435456
+  permission:
+    model:
+      enabled: true
+      llm: true
+      text_embedding: false
+      rerank: false
+      tts: false
+      speech2text: false
+      moderation: false
+plugins:
+  models:
+    - provider/vllm.yaml
+meta:
+  version: 0.0.1
+  arch:
+    - amd64
+    - arm64
+  runner:
+    language: python
+    version: "3.12"
+    entrypoint: main
+created_at: 2025-02-28
+verified: false
