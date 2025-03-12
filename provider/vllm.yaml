@@ -5,9 +5,9 @@ description:
   en_US: Models provided by vllm with guided inference supported.
   zh_Hans: Vllm openai guided 支持
 icon_small:
-  en_US: vllm-logo.png
+  en_US: vLLM-Logo.svg
 icon_large:
-  en_US: vllm-logo.png
+  en_US: vLLM-Logo.svg
 background: "#E5E7EB"
 supported_model_types:
   - llm

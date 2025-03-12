@@ -1,6 +1,6 @@
 version: 0.1.0
 type: plugin
-author: yangyaofei https://github.com/yangyaofei
+author: yangyaofei
 name: vllm
 label:
   en_US: vllm
@@ -12,7 +12,7 @@ description:
   ja_JP: vllm provider for guided support https://docs.vllm.ai/en/latest/serving/openai_compatible_server.html#id5
   zh_Hans: vllm provider for guided support https://docs.vllm.ai/en/latest/serving/openai_compatible_server.html#id5
   pt_BR: vllm provider for guided support https://docs.vllm.ai/en/latest/serving/openai_compatible_server.html#id5
-icon: vllm-logo.png
+icon: vLLM-Logo.svg
 resource:
   memory: 268435456
   permission:
