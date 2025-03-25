@@ -1,4 +1,4 @@
-version: 0.1.1
+version: 0.1.2
 type: plugin
 author: yangyaofei
 name: vllm
@@ -28,7 +28,7 @@ plugins:
   models:
     - provider/vllm.yaml
 meta:
-  version: 0.1.1
+  version: 0.1.2
   arch:
     - amd64
     - arm64
@@ -36,5 +36,5 @@ meta:
     language: python
     version: "3.12"
     entrypoint: main
-created_at: 2025-02-28
+created_at: 2025-03-25
 verified: false
