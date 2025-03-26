@@ -17,9 +17,11 @@ from dify_plugin.entities.model.message import (
     PromptMessage,
     PromptMessageTool, PromptMessageRole,
 )
+from dify_plugin.errors.model import InvokeError, CredentialsValidateFailedError
 from pydantic import BaseModel, ValidationError
 
 logger = logging.getLogger(__name__)
+
 
 class GuidedType(str, enum.Enum):
     JSON = "guided_json"
@@ -53,8 +55,7 @@ class VllmLargeLanguageModel(OAICompatLargeLanguageModel):
                 param = GuidedParam(**json.loads(prompt_messages[1].content))
                 model_parameters.update({param.param_type: json.dumps(param.param, ensure_ascii=False)})
                 prompt_messages.pop(1)
-            except json.JSONDecodeError | ValidationError:
-                # do nothing if it's not a valid config
+            except (json.JSONDecodeError, ValidationError):
                 pass
 
         return super().invoke(

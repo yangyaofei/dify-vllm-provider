@@ -16,12 +16,4 @@ class VllmModelProvider(ModelProvider):
 
         :param credentials: provider credentials, credentials form defined in `provider_credential_schema`.
         """
-        try:
-            pass
-        except CredentialsValidateFailedError as ex:
-            raise ex
-        except Exception as ex:
-            logger.exception(
-                f"{self.get_provider_schema().provider} credentials validate failed"
-            )
-            raise ex
+        pass
