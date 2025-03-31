@@ -51,12 +51,15 @@ class VllmLargeLanguageModel(OAICompatLargeLanguageModel):
             user: Optional[str] = None,
     ) -> Union[LLMResult, Generator]:
         if len(prompt_messages) >= 2 and prompt_messages[1].role == PromptMessageRole.ASSISTANT:
-            try:
-                param = GuidedParam(**json.loads(prompt_messages[1].content))
-                model_parameters.update({param.param_type: json.dumps(param.param, ensure_ascii=False)})
-                prompt_messages.pop(1)
-            except (json.JSONDecodeError, ValidationError):
-                pass
+            if type(prompt_messages[1].content) is str:
+                try:
+                    param = GuidedParam(**json.loads(prompt_messages[1].content))
+                    model_parameters.update({param.param_type: json.dumps(param.param, ensure_ascii=False)})
+                    prompt_messages.pop(1)
+                except (json.JSONDecodeError, ValidationError):
+                    pass
+                except Exception as e:
+                    logger.warning(f"Error in extract param from prompt, bypass, error msg: {e}")
 
         return super().invoke(
             model, credentials, prompt_messages, model_parameters,
