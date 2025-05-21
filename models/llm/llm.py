@@ -69,6 +69,16 @@ class VllmLargeLanguageModel(OAICompatLargeLanguageModel):
         entity = super().get_customizable_model_schema(model, credentials)
         entity.parameter_rules += [
             ParameterRule(
+                name="enable_thinking",
+                label=I18nObject(en_US="Deep thinking", zh_Hans="深度思考"),
+                help=I18nObject(
+                    en_US="Whether to enable deep thinking, applicable to various thinking mode models deployed on reasoning frameworks such as vLLM for example Qwen3 and deepseek-r1.",
+                    zh_Hans="是否开启深度思考，适用于vLLM等推理框架部署的多种思考模式模型，例如Qwen3和deepseek-r1。",
+                ),
+                type=ParameterType.BOOLEAN,
+                required=False,
+            ),
+            ParameterRule(
                 name="guided_json",
                 label=I18nObject(en_US="guided_json"),
                 help=I18nObject(en_US="guided_json in vllm, If specified, the output will follow the JSON schema."),
@@ -92,3 +102,30 @@ class VllmLargeLanguageModel(OAICompatLargeLanguageModel):
 
         ]
         return entity
+
+    def _invoke(
+        self,
+        model: str,
+        credentials: dict,
+        prompt_messages: list[PromptMessage],
+        model_parameters: dict,
+        tools: Optional[list[PromptMessageTool]] = None,
+        stop: Optional[list[str]] = None,
+        stream: bool = True,
+        user: Optional[str] = None,
+    ) -> Union[LLMResult, Generator]:
+        enable_thinking = model_parameters.pop("enable_thinking", None)
+        if enable_thinking is not None:
+            model_parameters["chat_template_kwargs"] = {"enable_thinking": bool(enable_thinking)}
+
+        return super()._invoke(
+            model,
+            credentials,
+            prompt_messages,
+            model_parameters,
+            tools,
+            stop,
+            stream,
+            user,
+        )
+
