@@ -38,12 +38,12 @@ class VllmLargeLanguageModel(OAICompatLargeLanguageModel):
     """
     Model class for vllm large language model.
     """
-    def invoke(
+    def _invoke(
             self,
             model: str,
             credentials: dict,
             prompt_messages: list[PromptMessage],
-            model_parameters: Optional[dict] = None,
+            model_parameters: dict,
             tools: Optional[list[PromptMessageTool]] = None,
             stop: Optional[Sequence[str]] = None,
             stream: bool = True,
