@@ -59,6 +59,9 @@ class VllmLargeLanguageModel(OAICompatLargeLanguageModel):
                     pass
                 except Exception as e:
                     logger.warning(f"Error in extract param from prompt, bypass, error msg: {e}")
+        enable_thinking = model_parameters.pop("enable_thinking", False)
+        if enable_thinking:
+            model_parameters["chat_template_kwargs"] = {"enable_thinking": bool(enable_thinking)}
 
         return super().invoke(
             model, credentials, prompt_messages, model_parameters,
@@ -103,30 +106,3 @@ class VllmLargeLanguageModel(OAICompatLargeLanguageModel):
 
         ]
         return entity
-
-    def _invoke(
-        self,
-        model: str,
-        credentials: dict,
-        prompt_messages: list[PromptMessage],
-        model_parameters: dict,
-        tools: Optional[list[PromptMessageTool]] = None,
-        stop: Optional[list[str]] = None,
-        stream: bool = True,
-        user: Optional[str] = None,
-    ) -> Union[LLMResult, Generator]:
-        enable_thinking = model_parameters.pop("enable_thinking", False)
-        if enable_thinking:
-            model_parameters["chat_template_kwargs"] = {"enable_thinking": bool(enable_thinking)}
-
-        return super()._invoke(
-            model,
-            credentials,
-            prompt_messages,
-            model_parameters,
-            tools,
-            stop,
-            stream,
-            user,
-        )
-
