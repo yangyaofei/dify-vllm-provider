@@ -64,6 +64,9 @@ class VllmLargeLanguageModel(OAICompatLargeLanguageModel):
         if enable_thinking:
             model_parameters["chat_template_kwargs"] = {"enable_thinking": bool(enable_thinking)}
 
+        if "json_schema" in model_parameters:
+            model_parameters["guided_json"] = model_parameters.pop("json_schema")
+
         return super().invoke(
             model, credentials, prompt_messages, model_parameters,
             tools, stop, stream, user
@@ -72,6 +75,12 @@ class VllmLargeLanguageModel(OAICompatLargeLanguageModel):
     def get_customizable_model_schema(self, model: str, credentials: dict) -> AIModelEntity:
         entity = super().get_customizable_model_schema(model, credentials)
         entity.parameter_rules += [
+            ParameterRule(
+                name="json_schema",
+                use_template="json_schema",
+                type=ParameterType.STRING,
+                label=I18nObject(en_US="json_schema")
+            ),
             ParameterRule(
                 name="enable_thinking",
                 label=I18nObject(en_US="Deep thinking", zh_Hans="深度思考"),
