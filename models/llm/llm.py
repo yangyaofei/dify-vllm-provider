@@ -115,6 +115,8 @@ class VllmLargeLanguageModel(OAICompatLargeLanguageModel):
         user: Optional[str] = None,
     ) -> Union[LLMResult, Generator]:
         enable_thinking = model_parameters.pop("enable_thinking", None)
+        # In the vllm framework, when using deep-thinking models, the thinking feature is enabled by default.
+        # Therefore, when no parameters are passed, vllm's responses will include thought results.
         if enable_thinking is not None:
             model_parameters["chat_template_kwargs"] = {"enable_thinking": bool(enable_thinking)}
 
