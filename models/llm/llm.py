@@ -60,14 +60,16 @@ class VllmLargeLanguageModel(OAICompatLargeLanguageModel):
                     pass
                 except Exception as e:
                     logger.warning(f"Error in extract param from prompt, bypass, error msg: {e}")
-        enable_thinking = model_parameters.pop("enable_thinking", False)
-        if enable_thinking:
+        enable_thinking = model_parameters.pop("enable_thinking", None)
+        # In the vllm framework, when using deep-thinking models, the thinking feature is enabled by default.
+        # Therefore, when no parameters are passed, vllm's responses will include thought results.
+        if enable_thinking is not None:
             model_parameters["chat_template_kwargs"] = {"enable_thinking": bool(enable_thinking)}
 
         if "json_schema" in model_parameters:
             model_parameters["guided_json"] = model_parameters.pop("json_schema")
 
-        return super().invoke(
+        return super()._invoke(
             model, credentials, prompt_messages, model_parameters,
             tools, stop, stream, user
         )
@@ -89,7 +91,6 @@ class VllmLargeLanguageModel(OAICompatLargeLanguageModel):
                     zh_Hans="是否开启深度思考，适用于vLLM等推理框架部署的多种思考模式模型，例如Qwen3和deepseek-r1。",
                 ),
                 type=ParameterType.BOOLEAN,
-                default=False,
                 required=False
             ),
             ParameterRule(
