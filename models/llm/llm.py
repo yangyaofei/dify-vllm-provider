@@ -76,7 +76,7 @@ class VllmLargeLanguageModel(OAICompatLargeLanguageModel):
                     zh_Hans="是否开启深度思考，适用于vLLM等推理框架部署的多种思考模式模型，例如Qwen3和deepseek-r1。",
                 ),
                 type=ParameterType.BOOLEAN,
-                required=False,
+                required=False
             ),
             ParameterRule(
                 name="guided_json",
