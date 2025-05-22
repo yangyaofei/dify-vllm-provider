@@ -28,6 +28,17 @@ This plugin provide a vllm-openai provider upon Dify's openai compatible provide
 
 ![`use guided`](./_assets/use_guided.png)
 
+### Config model with Dify's structured output
+
+When config with this, plugin will directly use `guided_json` to the vLLM backend.
+
+![`use structured output`](./_assets/structured_output.png)
+
+### Config model thinking mode
+
+You can disable/enable thinking mode for supported models (Qwen3, DeepSeek-R1).
+
+![`config thinking mode`](./_assets/deep_think.png)
 
 ## Dynamic Request guided
 
@@ -37,3 +48,7 @@ This comes little hacky, when the prompt has 2nd part and it's assistant, this p
 If it can be parsed as json.
 
 The structure of param can be found in `GuidedParam` class.
+
+You can enable it with config:
+
+![`enable dynamic request guided`](./_assets/dynamic_request_guided.png)
