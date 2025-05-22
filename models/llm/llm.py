@@ -76,8 +76,7 @@ class VllmLargeLanguageModel(OAICompatLargeLanguageModel):
                     zh_Hans="是否开启深度思考，适用于vLLM等推理框架部署的多种思考模式模型，例如Qwen3和deepseek-r1。",
                 ),
                 type=ParameterType.BOOLEAN,
-                default=False,
-                required=False
+                required=False,
             ),
             ParameterRule(
                 name="guided_json",
@@ -115,8 +114,8 @@ class VllmLargeLanguageModel(OAICompatLargeLanguageModel):
         stream: bool = True,
         user: Optional[str] = None,
     ) -> Union[LLMResult, Generator]:
-        enable_thinking = model_parameters.pop("enable_thinking", False)
-        if enable_thinking:
+        enable_thinking = model_parameters.pop("enable_thinking", None)
+        if enable_thinking is not None:
             model_parameters["chat_template_kwargs"] = {"enable_thinking": bool(enable_thinking)}
 
         return super()._invoke(
