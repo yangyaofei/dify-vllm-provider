@@ -5,6 +5,7 @@ from collections.abc import Generator, Sequence
 from typing import Optional, Union, Dict
 
 from dify_plugin import OAICompatLargeLanguageModel
+from dify_plugin.config.logger_format import plugin_logger_handler
 from dify_plugin.entities import I18nObject
 from dify_plugin.entities.model import (
     AIModelEntity,
@@ -19,7 +20,10 @@ from dify_plugin.entities.model.message import (
 )
 from pydantic import BaseModel, ValidationError
 
+# add logging
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+logger.addHandler(plugin_logger_handler)
 
 
 class GuidedType(str, enum.Enum):
@@ -38,6 +42,7 @@ class VllmLargeLanguageModel(OAICompatLargeLanguageModel):
     """
     Model class for vllm large language model.
     """
+
     def _invoke(
             self,
             model: str,
@@ -49,15 +54,19 @@ class VllmLargeLanguageModel(OAICompatLargeLanguageModel):
             stream: bool = True,
             user: Optional[str] = None,
     ) -> Union[LLMResult, Generator]:
+        logger.info(f"Model parameters: {model_parameters}")
+        logger.info(f"Prompt messages: {prompt_messages}")
         # check dynamic_request_guided
-        if model_parameters.pop("dynamic_request_guided", False) and len(prompt_messages) >= 2 and prompt_messages[1].role == PromptMessageRole.ASSISTANT:
+        if (model_parameters.pop("dynamic_request_guided", False)
+                and len(prompt_messages) >= 2
+                and prompt_messages[1].role == PromptMessageRole.ASSISTANT):
             if type(prompt_messages[1].content) is str:
                 try:
                     param = GuidedParam(**json.loads(prompt_messages[1].content))
                     model_parameters.update({param.param_type: json.dumps(param.param, ensure_ascii=False)})
                     prompt_messages.pop(1)
-                except (json.JSONDecodeError, ValidationError):
-                    pass
+                except (json.JSONDecodeError, ValidationError) as e:
+                    logger.error(f"Error in extract param from prompt, bypass, error msg: {e}")
                 except Exception as e:
                     logger.warning(f"Error in extract param from prompt, bypass, error msg: {e}")
 
@@ -70,6 +79,7 @@ class VllmLargeLanguageModel(OAICompatLargeLanguageModel):
         if "json_schema" in model_parameters:
             model_parameters["guided_json"] = model_parameters.pop("json_schema")
 
+        logger.info(f"Request Model parameters: {model_parameters}")
         return super()._invoke(
             model, credentials, prompt_messages, model_parameters,
             tools, stop, stream, user
@@ -119,7 +129,9 @@ class VllmLargeLanguageModel(OAICompatLargeLanguageModel):
             ParameterRule(
                 name="dynamic_request_guided",
                 label=I18nObject(en_US="Dynamic Request Guided"),
-                help=I18nObject(en_US="If set to true, when the prompt has 2nd part and it's assistant, this provider will use the assistant part as guided param."),
+                help=I18nObject(
+                    en_US="If set to true, when the prompt has 2nd part and it's assistant, this provider will use the assistant part as guided param."
+                ),
                 type=ParameterType.BOOLEAN,
                 default=False,
                 required=False
