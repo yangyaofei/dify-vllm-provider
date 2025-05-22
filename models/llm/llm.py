@@ -49,7 +49,8 @@ class VllmLargeLanguageModel(OAICompatLargeLanguageModel):
             stream: bool = True,
             user: Optional[str] = None,
     ) -> Union[LLMResult, Generator]:
-        if len(prompt_messages) >= 2 and prompt_messages[1].role == PromptMessageRole.ASSISTANT:
+        # check dynamic_request_guided
+        if model_parameters.pop("dynamic_request_guided", False) and len(prompt_messages) >= 2 and prompt_messages[1].role == PromptMessageRole.ASSISTANT:
             if type(prompt_messages[1].content) is str:
                 try:
                     param = GuidedParam(**json.loads(prompt_messages[1].content))
@@ -101,6 +102,14 @@ class VllmLargeLanguageModel(OAICompatLargeLanguageModel):
                 label=I18nObject(en_US="guided_grammar"),
                 help=I18nObject(en_US="If specified, the output will follow the context free grammar."),
                 type=ParameterType.TEXT,
+                required=False
+            ),
+            ParameterRule(
+                name="dynamic_request_guided",
+                label=I18nObject(en_US="Dynamic Request Guided"),
+                help=I18nObject(en_US="If set to true, when the prompt has 2nd part and it's assistant, this provider will use the assistant part as guided param."),
+                type=ParameterType.BOOLEAN,
+                default=False,
                 required=False
             )
 
