@@ -72,10 +72,23 @@ class VllmLargeLanguageModel(OAICompatLargeLanguageModel):
 
         # In the vllm framework, when using deep-thinking models, the thinking feature is enabled by default.
         # Therefore, when no parameters are passed, vllm's responses will include thought results.
+        chat_template_kwargs = {}
         if "enable_thinking" in model_parameters:
-            model_parameters["chat_template_kwargs"] = {
-                "enable_thinking": model_parameters.get("enable_thinking", False)}
+            chat_template_kwargs["enable_thinking"] = model_parameters.get("enable_thinking", False)
             model_parameters.pop("enable_thinking", None)
+        
+        # Handle reasoning effort parameter for reasoning models
+        if "reasoning_effort" in model_parameters:
+            if model_parameters.get("reasoning_effort") == "off":
+                model_parameters["include_reasoning"] = False
+            else:
+                chat_template_kwargs["reasoning_effort"] = model_parameters.get("reasoning_effort")
+            
+            model_parameters.pop("reasoning_effort", None)
+        
+        # Apply chat template kwargs if any were set
+        if chat_template_kwargs:
+            model_parameters["chat_template_kwargs"] = chat_template_kwargs
 
         if "json_schema" in model_parameters:
             model_parameters["guided_json"] = model_parameters.pop("json_schema")
@@ -104,6 +117,16 @@ class VllmLargeLanguageModel(OAICompatLargeLanguageModel):
                 ),
                 type=ParameterType.BOOLEAN,
                 default=False,
+                required=False
+            ),
+            ParameterRule(
+                name="reasoning_effort",
+                label=I18nObject(en_US="Reasoning effort", zh_Hans="推理努力程度"),
+                help=I18nObject(
+                    en_US="Controls the reasoning effort for reasoning models. Higher values may produce more thorough reasoning but take longer. Typical values: low, medium, high, off.",
+                    zh_Hans="控制推理模型的推理努力程度。更高的值可能产生更彻底的推理，但需要更长时间。典型值：low、medium、high、off。",
+                ),
+                type=ParameterType.STRING,
                 required=False
             ),
             ParameterRule(
