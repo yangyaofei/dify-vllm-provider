@@ -81,11 +81,8 @@ class VllmLargeLanguageModel(OAICompatLargeLanguageModel):
         if "reasoning_effort" in model_parameters:
             if model_parameters.get("reasoning_effort") == "off":
                 model_parameters["include_reasoning"] = False
-            else:
-                chat_template_kwargs["reasoning_effort"] = model_parameters.get("reasoning_effort")
+                model_parameters["reasoning_effort"] = 'low'
             
-            model_parameters.pop("reasoning_effort", None)
-        
         # Apply chat template kwargs if any were set
         if chat_template_kwargs:
             model_parameters["chat_template_kwargs"] = chat_template_kwargs
