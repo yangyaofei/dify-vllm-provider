@@ -1,4 +1,4 @@
-version: 0.1.5
+version: 0.2.0
 type: plugin
 author: yangyaofei
 name: vllm
@@ -8,10 +8,10 @@ label:
   zh_Hans: vllm
   pt_BR: vllm
 description:
-  en_US: vllm provider for guided support https://docs.vllm.ai/en/latest/serving/openai_compatible_server.html#id5
-  ja_JP: vllm provider for guided support https://docs.vllm.ai/en/latest/serving/openai_compatible_server.html#id5
-  zh_Hans: vllm provider for guided support https://docs.vllm.ai/en/latest/serving/openai_compatible_server.html#id5
-  pt_BR: vllm provider for guided support https://docs.vllm.ai/en/latest/serving/openai_compatible_server.html#id5
+  en_US: vllm provider for extra_body support https://docs.vllm.ai/en/latest/serving/openai_compatible_server.html#id5
+  ja_JP: vllm provider for extra_body support https://docs.vllm.ai/en/latest/serving/openai_compatible_server.html#id5
+  zh_Hans: vllm provider for extra_body support https://docs.vllm.ai/en/latest/serving/openai_compatible_server.html#id5
+  pt_BR: vllm provider for extra_body support https://docs.vllm.ai/en/latest/serving/openai_compatible_server.html#id5
 icon: vLLM-Logo.svg
 resource:
   memory: 268435456
@@ -28,7 +28,7 @@ plugins:
   models:
     - provider/vllm.yaml
 meta:
-  version: 0.1.6
+  version: 0.2.0
   arch:
     - amd64
     - arm64
