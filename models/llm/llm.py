@@ -42,12 +42,48 @@ def validate_extra_body(model_parameters: dict):
             logger.warning(f"Error in parse extra_body, bypass, error msg: {e}")
 
 
+def parse_and_inject_chat_template_kwargs(model_parameters: dict):
+    """Parse user-provided chat_template_kwargs JSON string and inject into model_parameters as dict."""
+    raw = model_parameters.get("chat_template_kwargs")
+    if not raw:
+        return
+    # If already a dict (e.g. programmatically set), nothing to do
+    if isinstance(raw, dict):
+        return
+    try:
+        parsed = json.loads(raw)
+        if isinstance(parsed, dict):
+            # Replace the string with the parsed dict so downstream logic merges correctly
+            model_parameters["chat_template_kwargs"] = parsed
+        else:
+            logger.warning(f"chat_template_kwargs must be a JSON object, got {type(parsed).__name__}")
+    except json.JSONDecodeError as e:
+        logger.error(f"Error in parse chat_template_kwargs, bypass, error msg: {e}")
+    except Exception as e:
+        logger.warning(f"Error in parse chat_template_kwargs, bypass, error msg: {e}")
+
+
 def add_extra_body(entity: AIModelEntity) -> AIModelEntity:
     entity.parameter_rules += [
         ParameterRule(
             name="extra_body",
             type=ParameterType.TEXT,
             label=I18nObject(en_US="extra_body")
+        )
+    ]
+    return entity
+
+
+def add_chat_template_kwargs(entity: AIModelEntity) -> AIModelEntity:
+    entity.parameter_rules += [
+        ParameterRule(
+            name="chat_template_kwargs",
+            type=ParameterType.TEXT,
+            label=I18nObject(en_US="Chat Template Kwargs", zh_Hans="聊天模板参数"),
+            help=I18nObject(
+                en_US="JSON object for vLLM chat_template_kwargs, e.g. {\"enable_thinking\": true}",
+                zh_Hans="vLLM 的 chat_template_kwargs 参数，JSON 对象格式，例如 {\"enable_thinking\": true}",
+            ),
         )
     ]
     return entity
@@ -257,11 +293,15 @@ class VllmLargeLanguageModel(OpenAILargeLanguageModel):
             user: Optional[str] = None,
     ) -> Union[LLMResult, Generator]:
         validate_extra_body(model_parameters)
+        # Parse user-provided chat_template_kwargs JSON string into dict
+        # Must happen before super()._invoke() so thinking mode logic can merge via setdefault
+        parse_and_inject_chat_template_kwargs(model_parameters)
         return super()._invoke(
             model, credentials, prompt_messages, model_parameters,
             tools, stop, stream, user
         )
 
     def get_customizable_model_schema(self, model: str, credentials: dict) -> AIModelEntity:
-        return add_extra_body(super().get_customizable_model_schema(model, credentials))
+        entity = add_extra_body(super().get_customizable_model_schema(model, credentials))
+        return add_chat_template_kwargs(entity)
 
