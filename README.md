@@ -17,6 +17,24 @@ Due to the change of Dify's openai compatible provider and vLLM's openai compati
 So, it's not necessary to do structured output here, and so as other features.
 In 0.2.0, the plugin will remove all parameters and add `extra_body` to pass extra parameters directly to vLLM backend.
 
+## **version 0.2.1 notice**
+基于官方 OpenAI-API-compatible 插件的最新实现，增加了以下功能：
+- **Thinking Mode**: 支持 `enable_thinking` 开关，适配 vLLM 的 `chat_template_kwargs` 和 `reasoning` 响应字段
+- **Compatibility Mode**: 新增 `compatibility_mode` 配置（strict/extended），控制是否注入额外参数
+- **Reasoning Effort**: 支持 `reasoning_effort` 参数（none/low/medium/high），vLLM 原生支持
+- **Structured Output**: 支持 `response_format`、`json_schema`、`reasoning_format` 参数
+- **Thinking Content Filter**: 当 thinking 关闭时自动过滤 `<think/>` 内容
+- 保留 `extra_body` 作为 vLLM extra parameters 的通用传递方式
+
+## **version 0.2.1 notice**
+Based on the latest official OpenAI-API-compatible plugin implementation, the following features have been added:
+- **Thinking Mode**: Support `enable_thinking` toggle, compatible with vLLM's `chat_template_kwargs` and `reasoning` response field
+- **Compatibility Mode**: New `compatibility_mode` config (strict/extended), controls whether to inject extra parameters
+- **Reasoning Effort**: Support `reasoning_effort` parameter (none/low/medium/high), natively supported by vLLM
+- **Structured Output**: Support `response_format`, `json_schema`, `reasoning_format` parameters
+- **Thinking Content Filter**: Automatically filter `<think/>` content when thinking is disabled
+- Keep `extra_body` as the generic way to pass vLLM extra parameters
+
 ## Repo
 https://github.com/yangyaofei/dify-vllm-provider
 
