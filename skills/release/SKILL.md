@@ -1,12 +1,17 @@
 ---
 name: release
 description: Dify vLLM provider 完整 release 流程。当需要发布新版本、构建 .difypkg、打 tag、创建 GitHub release、更新 fork、提交 PR 到 langgenius/dify-plugins 时使用。触发词包括 "release"、"发布"、"构建版本"、"提交 PR"、"打包插件" 等。
-allowed-tools: Bash(git:*), Bash(dify:*), Bash(gh:*)
+allowed-tools: Bash(git:*), Bash(dify:*), Bash(gh:*), Bash(agent-browser:*)
 ---
 
 # Release Workflow
 
 完成 bug 修复/功能开发后，发布新版本到 Dify Marketplace 的完整流程。
+
+## Tool Preference
+
+- **Primary**: 所有 GitHub 操作优先使用 `gh` CLI（更快、更可靠）
+- **Fallback**: 当 `gh` 不可用时，使用 `agent-browser` 操作 GitHub web UI
 
 ## 1. Bump Version
 
@@ -55,7 +60,7 @@ git push origin v{version}
 
 ## 4. Create GitHub Release
 
-直接用 `gh release create`（不用 draft）：
+**Primary (`gh`)** — 直接 create，不用 draft：
 
 ```bash
 gh release create v0.2.2 \
@@ -70,6 +75,35 @@ gh release edit v0.2.2 --repo yangyaofei/dify-vllm-provider --notes '<merged not
 # 上传/替换附件:
 gh release upload v0.2.2 /tmp/vllm-0.2.2.difypkg \
   --repo yangyaofei/dify-vllm-provider --clobber
+```
+
+**Fallback (`agent-browser`)**:
+
+```bash
+# 打开 new release 页面
+agent-browser open https://github.com/yangyaofei/dify-vllm-provider/releases/new
+agent-browser snapshot -i
+
+# 选择 tag，填写 title/notes
+agent-browser click @<tag-dropdown-ref>
+agent-browser click @<v0.2.2-menuitemradio>
+agent-browser fill @<title-textbox> "v0.2.2"
+# 通过 eval 设置 release notes (textarea 中的引号/特殊字符容易导致 bash 错误)
+cat <<'EOF' | agent-browser eval --stdin
+const ta = document.querySelector('#fc-release_body');
+if (ta) { ta.value = `notes content`; ta.dispatchEvent(new Event('input', {bubbles: true})); }
+EOF
+
+# 上传 .difypkg (用隐藏的 file input)
+agent-browser upload "#releases-upload" "/tmp/vllm-0.2.2.difypkg"
+# 或通过 eval 找 file input:
+cat <<'EOF' | agent-browser eval --stdin
+const inputs = document.querySelectorAll('input[type="file"]');
+JSON.stringify(Array.from(inputs).map((el,i) => ({i, id: el.id, accept: el.accept})));
+EOF
+
+# 发布
+agent-browser click @<publish-button>
 ```
 
 ## 5. Update Fork (yangyaofei/dify-plugins)
@@ -101,6 +135,8 @@ git push origin main
 
 ## 6. Submit/Update PR to Official
 
+**Primary (`gh`)**:
+
 如果已有旧版本 PR 打开，直接 push 同分支即可自动更新：
 
 ```bash
@@ -124,7 +160,35 @@ gh pr create \
 
 PR body 必须包含 [Plugin Submission Form](https://github.com/langgenius/dify-plugins) 要求的完整表单（6 个 section）。
 
-## 7. Notify Related Issues
+**Fallback (`agent-browser`)**:
+
+```bash
+# 从 yangyaofei/dify-plugins 发起 PR
+agent-browser open https://github.com/yangyaofei/dify-plugins
+# 点击 "Contribute" → "Open pull request"，选择 langgenius/dify-plugins:main 作为 base
+# 填写 title 和 body，提交
+```
+
+## 7. Handle Review Feedback
+
+**Primary (`gh`)**:
+
+```bash
+# 查看 reviews
+gh pr view <PR_NUMBER> --repo langgenius/dify-plugins --json reviews --jq '.reviews[]'
+
+# 查看 CI checks
+gh pr checks <PR_NUMBER> --repo langgenius/dify-plugins
+```
+
+**Fallback (`agent-browser`)**:
+
+```bash
+agent-browser open https://github.com/langgenius/dify-plugins/pull/<PR_NUMBER>
+agent-browser snapshot -i   # 查看 review comments 和 CI status
+```
+
+## 8. Notify Related Issues
 
 ```bash
 gh issue comment <ISSUE_NUMBER> \
