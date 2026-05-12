@@ -2,7 +2,7 @@
 
 Dify custom model provider for vLLM's OpenAI-Compatible Server, supporting [extra parameters](https://docs.vllm.ai/en/latest/serving/openai_compatible_server.html#extra-parameters) and thinking mode features.
 
-基于 Dify 官方 OpenAI-API-compatible 插件扩展，专为 vLLM OpenAI-Compatible Server 提供 `extra_body` 和思考模式支持。
+Based on the official Dify OpenAI-API-compatible plugin, extended for vLLM OpenAI-Compatible Server.
 
 ## Latest: v0.2.2
 
