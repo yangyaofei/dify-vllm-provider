@@ -4,7 +4,7 @@ Dify custom model provider for vLLM's OpenAI-Compatible Server, supporting [extr
 
 Based on the official Dify OpenAI-API-compatible plugin, extended for vLLM OpenAI-Compatible Server.
 
-## Latest: v0.2.2
+## Latest: v0.2.3
 
 ### Fixes
 - **#34**: Fixed thinking mode markup tags — `<think/>`/`</think/>` → `<think>`/`</think>`, aligned 1:1 with [dify-official-plugins](https://github.com/langgenius/dify-official-plugins) openai_api_compatible
